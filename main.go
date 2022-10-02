@@ -30,11 +30,20 @@ func mapHof[I int | string](f func(x I) I) func(y []I) []I {
 	}
 }
 
+func reduceHof[I int | string](f func(I, any) any, x any) func(y []I) any {
+	return func(z []I) any {
+		for _, val := range z {
+			x = f(val, x)
+		}
+		return x
+	}
+}
+
 func main() {
 	my_ints := []int{1, 2, 3, 4, 5}
-	my_strings := []string{"Hello", "Big", "Small"}
+	my_strings := []string{"Hello", "Big", "Small", "amazing", "traditional", "no"}
 
-	over_five := filterHof(func(i int) bool {
+	over_three := filterHof(func(i int) bool {
 		return i > 3
 	})
 
@@ -46,11 +55,34 @@ func main() {
 		return s + " World!"
 	})
 
-	over_five_nums := over_five(my_ints)
+	shorter_than_3 := filterHof(func(s string) bool {
+		return len(s) < 3
+	})
+
+	reduce_count := reduceHof(func(s string, res any) any {
+		asserted_num, ok := res.(int)
+		if len(s) > 5 {
+			if ok {
+				asserted_num += 1
+			}
+		}
+		return asserted_num
+	}, 0)
+
+	over_three_nums := over_three(my_ints)
 	added_nums := add_one(my_ints)
 	added_strings := add_world(my_strings)
+	shorter_strings := shorter_than_3(my_strings)
+	reduced_strings := reduce_count(my_strings)
 
-	log.Println(over_five_nums)
+	log.Println("Numbers over three")
+	log.Println(over_three_nums)
+	log.Println("Numbers with one added")
 	log.Println(added_nums)
+	log.Println("Strings with 'world' added")
 	log.Println(added_strings)
+	log.Println("Strings shorter than three")
+	log.Println(shorter_strings)
+	log.Println("Count of strings longer than five")
+	log.Println(reduced_strings)
 }
