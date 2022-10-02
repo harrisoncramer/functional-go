@@ -30,6 +30,7 @@ func mapHof[I int | string](f func(x I) I) func(y []I) []I {
 	}
 }
 
+// Reduce applies the callback to each value in the array and assigns the result to the aggregator, and returns it.
 func reduceHof[I int | string](f func(I, any) any, x any) func(y []I) any {
 	return func(z []I) any {
 		for _, val := range z {
